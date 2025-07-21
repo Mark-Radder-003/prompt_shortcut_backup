@@ -2,7 +2,7 @@
 
 **Usage:**
 ```
-@gcp_mcp_setup/prompt/reference_summary _template.md
+@_prompt/reference_summary_template.md
 TOPIC = 'Your Topic Here'
 
 The webpages are:
