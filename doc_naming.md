@@ -20,6 +20,7 @@
 **{VERSION}**: Version number (v1, v2, v3...)
 
 **{TIMESTAMP}**: Timestamp (YYYYMMDDHHSS)
+Make sure you use bash get the curret time
 
 ### Naming Examples
 - `sdd_v1_202507131900.md` (System Design Document)
