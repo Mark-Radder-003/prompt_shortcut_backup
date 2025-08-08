@@ -8,7 +8,7 @@
 cd ~/workspace/your-project
 
 # Create symbolic link to main templates
-ln -s ~/Documents/_prompt/main _prompt
+ln -s ~/Documents/_prompt/main _prompt_alias
 
 # Now you can reference templates using @_prompt/template_name.md
 ```
