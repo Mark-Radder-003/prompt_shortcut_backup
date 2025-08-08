@@ -11,7 +11,7 @@
 
 **{TYPE}**: Document type abbreviation
 - `sdd`: System Design Document
-- `api`: API Documentation  
+- `api`: API Documentation
 - `req`: Requirements Document
 - `test`: Test Documentation
 - `deploy`: Deployment Guide
@@ -28,14 +28,14 @@ Make sure you use bash get the curret time
 - `req_v1_202507121500.md` (Requirements Document)
 
 **rule**
-save Generated Document  to this folder **doc/** inside the prj
+save Generated Document to this folder **doc/** inside the prj
 
 ### Usage
 
 #### Basic Usage
 ```
-@your_project/prompt/doc_naming_template.md 
-TYPE = 'sdd'        # Document type 
-VERSION = '1'       # Version number 
+@your_project/prompt/doc_naming_template.md
+TYPE = 'sdd'        # Document type
+VERSION = '1'       # Version number
 PROJECT_NAME = 'Your Project Name'
 ```
