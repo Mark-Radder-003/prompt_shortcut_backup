@@ -414,6 +414,110 @@ mcp__filesystem__write_file(
 
 **Note for Humans**: Symbolic links can be created manually if needed for persistent shared resources.
 
+### Issue 4: Confusion About Bare Repository Location
+**Symptoms**: Creating worktrees in wrong directory structure, unclear about where bare repo should be
+
+**Root Causes**:
+- Misunderstanding that project root should be the bare repository
+- Attempting to create bare repo in subdirectory
+- Not recognizing the flat structure requirement
+
+**Solutions**:
+```bash
+# CORRECT Structure:
+project-root/              # ← This IS the bare repository
+├── .git/                 # Git internal files
+├── main/                 # Worktree for main branch
+├── worktrees/           # Optional: group feature worktrees
+│   ├── feature-1/       # Feature worktree
+│   └── feature-2/       # Another worktree
+└── [NO working files here!]
+
+# INCORRECT Structure:
+project-root/
+├── src/                  # ❌ Working files in bare repo
+├── bare-repo/           # ❌ Bare repo in subdirectory
+│   └── .git/
+└── worktrees/
+```
+
+**Key Understanding**: The project root directory itself becomes the bare repository - it should contain ONLY .git/ and worktree directories, no working files.
+
+### Issue 5: Unnecessary Permission Assumptions
+**Symptoms**: AI assistants believing they need parent directory access to convert current directory to bare repo
+
+**Root Causes**:
+- Incorrect assumption that converting to bare requires parent access
+- Misunderstanding of git config operations
+- Over-complication of simple operations
+
+**Solutions**:
+```bash
+# Converting current directory to bare - NO parent access needed:
+cd /path/to/project
+git config --bool core.bare true  # Works on current directory
+
+# AI assistants should understand:
+# - Current directory operations don't need parent access
+# - Git config modifies .git/config in current directory
+# - File backup/restore can use subdirectories
+```
+
+### Issue 6: Converting Existing Repository with Working Files
+**Symptoms**: Existing repository has working files that need to be preserved when converting to bare
+
+**Root Causes**:
+- Repository already contains code and needs restructuring
+- Need to preserve git history while changing structure
+- Complex transition from regular to bare+worktree setup
+
+**Solutions**:
+
+**Step-by-Step Conversion Process**:
+```bash
+# 1. Backup existing files (AI should use filesystem MCP)
+mkdir temp_backup
+mv * temp_backup/ 2>/dev/null
+mv .* temp_backup/ 2>/dev/null
+
+# 2. Convert to bare repository
+git config --bool core.bare true
+
+# 3. Create main worktree
+git worktree add main main
+
+# 4. Restore files to main worktree
+mv temp_backup/* main/
+mv temp_backup/.* main/ 2>/dev/null
+rmdir temp_backup
+
+# 5. Create additional worktrees as needed
+git worktree add worktrees/feature-1 -b feature-1
+```
+
+**For AI Assistants using Filesystem MCP**:
+```python
+# 1. Create backup directory
+mcp__filesystem__create_directory(path="/path/to/project/temp_backup")
+
+# 2. Move files to backup (iterate through directory listing)
+files = mcp__filesystem__list_directory(path="/path/to/project")
+for file in files:
+    if file not in ['.git', 'temp_backup']:
+        mcp__filesystem__move_file(
+            source=f"/path/to/project/{file}",
+            destination=f"/path/to/project/temp_backup/{file}"
+        )
+
+# 3. After worktree creation, restore files
+backup_files = mcp__filesystem__list_directory(path="/path/to/project/temp_backup")
+for file in backup_files:
+    mcp__filesystem__move_file(
+        source=f"/path/to/project/temp_backup/{file}",
+        destination=f"/path/to/project/main/{file}"
+    )
+```
+
 ## Validation Checklist
 
 ### Manual Validation Steps (Reference Documentation)
