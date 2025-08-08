@@ -1,47 +1,700 @@
-# AI Prompt: Git Worktree Setup Configuration
+# Git Worktree + Claude Code Integration Guide
 
-## Context
-User wants to set up git worktree structure for parallel development with clean organization.
+> ## 🚨 CRITICAL DIRECTIVE FOR AI ASSISTANTS 🚨
+> **MANDATORY: When performing ANY file operations related to git worktrees:**
+> - **ALWAYS use `filesystem` MCP server for ALL file operations**
+> - **NEVER use bash commands like `cd`, `ls`, `mkdir`, `cp`, `mv`, `rm`**
+> - **ALWAYS use absolute paths with filesystem MCP functions**
+> 
+> **This is NON-NEGOTIABLE. Using bash commands WILL cause path resolution failures.**
+> 
+> Example:
+> - ❌ WRONG: `cd /path/to/worktree`
+> - ✅ CORRECT: `mcp__filesystem__list_directory(path="/path/to/worktree")`
+
+## Context & Purpose
+This guide provides a comprehensive setup for git worktree structure optimized for parallel development with Claude Code and other AI coding assistants. It addresses common path resolution issues and ensures seamless integration.
+
+### What This Document Provides
+- ✅ **Reference documentation** for git worktree setup commands
+- ✅ **Filesystem MCP operations** for AI assistants to use
+- ✅ **Configuration file templates** (JSON, Markdown) for AI context
+- ✅ **Best practices** for worktree management
+- ✅ **Troubleshooting guidance** for common issues
+
+### What This Document Does NOT Provide
+- ❌ **Executable scripts** (.sh files) - This is documentation only
+- ❌ **Automated setup** - Commands must be run manually or via AI with filesystem MCP
+- ❌ **Shell scripts to save** - All code blocks are reference documentation
+
+## ⚠️ Critical Success Factors
+1. **Always start Claude Code from the worktree directory, NOT the bare repo root**
+2. **Use absolute paths when referencing files across worktrees**
+3. **Configure git properly for worktree-specific settings**
+4. **Validate setup after each worktree creation**
+5. **🚨 CRITICAL: Use filesystem MCP server for ALL file operations - NEVER use bash commands like cd, mkdir, mv**
 
 ## Required Structure
 ```
-ci-xxxx/                              # Root directory (bare git / detached HEAD)
-├── .git/                             # Git management area
-├── main/                             # Main worktree (main branch)
-└── feature/                          # Feature worktrees directory
-    ├── feature-01/                   # Feature worktree 1
-    ├── feature-02/                   # Feature worktree 2
-    └── feature-03/                   # Feature worktree 3
+project-root/                         # Bare repository (NO working files here!)
+├── .git/                            # Git management (bare repo)
+├── main/                            # Main branch worktree
+│   ├── .git                        # File pointing to ../git/worktrees/main
+│   ├── src/                        # Your actual project files
+│   ├── docs/                       # Documentation
+│   └── README.md                   # Project readme
+└── feature/                         # Feature worktrees directory
+    ├── feature-01/                  # Feature worktree 1
+    │   ├── .git                    # File pointing to ../../.git/worktrees/feature-01
+    │   └── [project files]         # Complete project structure
+    ├── feature-02/                  # Feature worktree 2
+    │   ├── .git                    # File pointing to ../../.git/worktrees/feature-02
+    │   └── [project files]         # Complete project structure
+    └── feature-03/                  # Feature worktree 3
+        ├── .git                    # File pointing to ../../.git/worktrees/feature-03
+        └── [project files]         # Complete project structure
 ```
 
-## Key Requirements
-- Root must be bare git (detached HEAD) - no project files
-- Main worktree contains all project files and documentation
-- Each feature worktree is independent working directory
-- All worktrees share same git history
-- Parallel development without branch conflicts
+## Complete Setup Process
 
-## Setup Process
-1. **Convert root to bare git**: `git checkout --detach` (makes root "null git")
-2. **Create main worktree**: `git worktree add main main`
-3. **Create feature worktrees**: `git worktree add feature/[name] feature/[name]`
+### 1. Initial Repository Setup (Human One-Time Action)
 
-## Essential Commands
-- `git worktree list` - Check all worktrees
-- `git worktree add [path] [branch]` - Create new worktree
-- `git worktree remove [path]` - Remove worktree
-- `git worktree prune` - Clean up invalid worktrees
+**⚠️ These are git commands that humans must run initially. AI cannot create git repositories.**
 
-## AI Instructions
-When user requests git worktree setup:
-1. Use this exact structure pattern
-2. Ensure root stays clean (detached HEAD)
-3. Place all project files in main/ worktree
-4. Create feature/ directory for parallel development
-5. Verify structure matches the pattern above
+```bash
+# Create project directory
+mkdir my-project && cd my-project
 
-## Common Issues to Avoid
-- Don't put project files in root directory
-- Don't manually create worktree folders
-- Always use `git worktree add` command
-- Keep feature branches independent
+# Initialize as bare repository
+git init --bare
+# OR convert existing repo to bare
+git config --bool core.bare true
+
+# Verify bare status
+git config core.bare  # Should output: true
+```
+
+### 2. Create Main Worktree (Human One-Time Action)
+
+**⚠️ Git worktree commands must be run by humans. AI should use filesystem MCP after worktrees are created.**
+
+```bash
+# From the bare repo root
+git worktree add main main
+
+# If main branch doesn't exist yet
+git worktree add -b main main HEAD
+
+# Verify worktree creation
+git worktree list
+```
+
+### 3. Configure Worktree-Specific Settings (Git Commands)
+
+**Reference commands for git configuration:**
+
+```bash
+# Enable worktree-specific configuration
+git config extensions.worktreeConfig true
+
+# In each worktree, configure user settings if needed
+# (Run from within the worktree directory)
+git config --worktree user.name "Your Name"
+git config --worktree user.email "your.email@example.com"
+```
+
+### 4. Create Feature Worktrees
+
+**For Humans (git commands):**
+```bash
+# Add feature worktrees from bare repo root
+git worktree add feature/feature-01 -b feature-01
+git worktree add feature/feature-02 -b feature-02
+git worktree add feature/feature-03 -b feature-03
+```
+
+**For AI (after worktrees exist):**
+```python
+# Create feature directory if needed
+mcp__filesystem__create_directory(path="/path/to/project/feature")
+
+# Access worktree files
+mcp__filesystem__list_directory(path="/path/to/project/feature/feature-01")
+```
+
+## 🚨 CRITICAL: File Operations with Filesystem MCP Server
+
+### ⚠️ MANDATORY: Use Filesystem MCP for ALL File Operations
+
+**When working with git worktrees, AI assistants MUST use the filesystem MCP server for ALL file operations.**
+
+#### ❌ NEVER Use Bash Commands for File Operations:
+```bash
+# DON'T DO THIS - These bash commands cause path resolution issues:
+cd /path/to/worktree        # ❌ WRONG
+mkdir feature               # ❌ WRONG  
+mv file1 file2              # ❌ WRONG
+cp source dest              # ❌ WRONG
+rm file                     # ❌ WRONG
+ls -la                      # ❌ WRONG
+```
+
+#### ✅ ALWAYS Use Filesystem MCP Server:
+```
+# CORRECT - Use filesystem MCP operations:
+mcp__filesystem__list_directory         # List files
+mcp__filesystem__create_directory       # Create directories
+mcp__filesystem__move_file              # Move/rename files
+mcp__filesystem__read_file              # Read file contents
+mcp__filesystem__write_file             # Write file contents
+mcp__filesystem__get_file_info          # Get file metadata
+```
+
+### Why This Is Critical
+1. **Path Resolution**: Filesystem MCP maintains correct absolute paths
+2. **Context Preservation**: MCP operations preserve worktree context
+3. **Error Prevention**: Avoids "file not found" and wrong directory errors
+4. **Consistency**: Ensures all operations use the same path resolution logic
+
+### Common Filesystem MCP Operations for Worktrees
+
+| Operation | Filesystem MCP Function | Example |
+|-----------|------------------------|----------|
+| Navigate to worktree | `list_directory` | List `/Users/username/project/main` |
+| Create feature dir | `create_directory` | Create `/Users/username/project/feature` |
+| Check worktree files | `list_directory` | List current worktree path |
+| Read config | `read_file` | Read `.claude-config.json` |
+| Write context | `write_file` | Write `.ai-context/worktree-map.md` |
+| Move files | `move_file` | Move between worktrees with full paths |
+| Get file info | `get_file_info` | Check if path exists and permissions |
+
+### Example: Navigating Worktrees with Filesystem MCP
+
+```python
+# Instead of: cd /path/to/project/main
+# Use:
+mcp__filesystem__list_directory(path="/Users/username/project/main")
+
+# Instead of: mkdir -p feature/feature-01  
+# Use:
+mcp__filesystem__create_directory(path="/Users/username/project/feature/feature-01")
+
+# Instead of: ls -la
+# Use:
+mcp__filesystem__list_directory_with_sizes(path=".")
+```
+
+## Claude Code Integration Best Practices
+
+### Starting Claude Code Sessions
+
+#### ✅ CORRECT: Start from Worktree Directory
+
+**IMPORTANT**: When AI assistants need to access worktree files, they should use filesystem MCP, not bash navigation:
+
+```
+# For AI Assistants - Use filesystem MCP:
+mcp__filesystem__list_directory(path="/path/to/project-root/main")
+mcp__filesystem__read_file(path="/path/to/project-root/main/src/file.js")
+
+# For humans starting Claude Code (one-time setup only):
+# Navigate to specific worktree FIRST
+# Then start Claude Code from there
+claude-code /path/to/project-root/main
+```
+
+#### ❌ INCORRECT: Starting from Bare Repo
+```bash
+# DON'T DO THIS - Will cause path resolution issues
+cd /path/to/project-root
+claude-code .
+```
+
+### Path Reference Strategies
+
+#### 1. Use Absolute Paths for Cross-Worktree References
+```bash
+# Good: Absolute path
+/Users/username/project-root/main/src/file.js
+/Users/username/project-root/feature/feature-01/src/file.js
+
+# Bad: Relative path from wrong context
+../main/src/file.js  # May fail if context is unclear
+```
+
+#### 2. Navigation Reference (For Documentation Only)
+
+**For Humans**: Add these aliases to your `.bashrc` or `.zshrc`:
+```bash
+# Quick navigation aliases
+alias wt-main='cd /path/to/project-root/main'
+alias wt-list='git worktree list --verbose'
+alias wt-feature='cd /path/to/project-root/feature'
+```
+
+**For AI Assistants**: Use filesystem MCP to navigate:
+```python
+# List worktrees (AI should use git command for worktree info)
+# Then use filesystem MCP for file operations:
+mcp__filesystem__list_directory(path="/path/to/project-root/main")
+mcp__filesystem__read_file(path="/path/to/project-root/main/.claude-config.json")
+```
+
+#### 3. Create Enhanced `.claude-config.json` in Each Worktree
+```json
+{
+  "project_name": "my-project",
+  "ai_context_version": "2.0",
+  "bare_repo": "/Users/username/project-root",
+  "worktrees": {
+    "main": {
+      "path": "/Users/username/project-root/main",
+      "branch": "main",
+      "status": "active",
+      "last_accessed": "2024-08-08T15:00:00Z"
+    },
+    "feature-01": {
+      "path": "/Users/username/project-root/feature/feature-01",
+      "branch": "feature/user-auth",
+      "status": "active",
+      "last_accessed": "2024-08-08T14:30:00Z"
+    },
+    "feature-02": {
+      "path": "/Users/username/project-root/feature/feature-02",
+      "branch": "feature/payment",
+      "status": "locked",
+      "last_accessed": "2024-08-07T10:00:00Z"
+    }
+  },
+  "ai_instructions": "Always use absolute paths from worktrees object above. This is the source of truth for path resolution."
+}
+```
+
+#### 4. Create AI Context Documentation
+Create `.ai-context/worktree-map.md` in the bare repo root for AI to understand the exact folder structure:
+
+```markdown
+# Worktree Path Mapping for AI Context
+
+## Project: [Your Project Name]
+**Last Updated**: [Update timestamp when changes occur]
+**Purpose**: This document helps AI assistants understand the exact local folder structure
+
+## Active Worktrees
+| Branch | Worktree Path | Status | Description |
+|--------|--------------|--------|-------------|
+| main | /Users/username/project-root/main | active | Main development branch |
+| feature-01 | /Users/username/project-root/feature/feature-01 | active | User authentication feature |
+| feature-02 | /Users/username/project-root/feature/feature-02 | locked | Payment integration |
+| feature-03 | /Users/username/project-root/feature/feature-03 | prunable | Abandoned feature |
+
+## Quick Navigation
+- **Current Working Directory**: [Run `pwd` and update here]
+- **Project Root (Bare)**: /Users/username/project-root
+- **Active Development**: /Users/username/project-root/main
+- **Feature Branches**: /Users/username/project-root/feature/
+
+## Path Resolution Rules for AI
+1. **ALWAYS use filesystem MCP server for ALL file operations**
+2. Never assume relative paths - always use absolute paths from this document
+3. When user references a file, check the worktree path first using filesystem MCP
+4. Cross-worktree references must use full absolute paths with filesystem MCP
+5. This document is the source of truth for all path resolutions
+6. **NEVER use bash commands (cd, ls, mkdir, etc.) for file operations**
+
+## Git Worktree Status
+```bash
+# Output of: git worktree list --verbose
+/Users/username/project-root       (bare)
+/Users/username/project-root/main  abc123 [main]
+/Users/username/project-root/feature/feature-01  def456 [feature/user-auth]
+/Users/username/project-root/feature/feature-02  ghi789 [feature/payment] locked
+```
+```
+
+### Session Management Tips
+
+1. **Clear Context When Switching Worktrees**
+   
+   **For AI Assistants**: Use filesystem MCP to access different worktrees:
+   ```python
+   # Access files from different worktree using filesystem MCP:
+   mcp__filesystem__read_file(path="/path/to/project-root/feature/feature-01/src/file.js")
+   ```
+   
+   **For Humans**: End current session and start new one from target worktree:
+   ```bash
+   # Human action only - start new session from target worktree
+   claude-code /path/to/project-root/feature/feature-01
+   ```
+
+2. **Use Worktree-Specific Terminal Sessions**
+   - Open separate terminal tabs/windows for each worktree
+   - Label them clearly (e.g., "MAIN", "FEATURE-01")
+   - Keep working directory consistent within each session
+
+3. **Document Current Context**
+   Create `CURRENT_WORK.md` in each worktree:
+   ```markdown
+   # Current Work Context
+   
+   **Worktree**: feature-01
+   **Branch**: feature/user-authentication
+   **Base Path**: /Users/username/project-root/feature/feature-01
+   **Status**: Active development
+   **Related Issues**: #123, #124
+   ```
+
+## Common Issues & Solutions
+
+### Issue 1: Claude Code Can't Find Files
+**Symptoms**: "File not found" errors, incorrect path suggestions
+
+**Root Causes**:
+- Started Claude Code from bare repository root
+- Cached session state from different worktree
+- Relative path confusion
+
+**Solutions**:
+```python
+# 1. For AI: Verify worktree path using filesystem MCP
+mcp__filesystem__get_file_info(path="/path/to/project-root/main")
+mcp__filesystem__list_directory(path="/path/to/project-root/main")
+
+# 2. For AI: Access files using absolute paths with filesystem MCP
+mcp__filesystem__read_file(path="/path/to/project-root/main/src/file.js")
+
+# 3. For Humans: Start fresh Claude Code session from correct worktree
+# (One-time human action only)
+claude-code /absolute/path/to/worktree
+```
+
+### Issue 2: Git Commands Fail or Show Wrong Status
+**Symptoms**: Git status shows unexpected results, commits go to wrong branch
+
+**Root Causes**:
+- Git context pointing to bare repository
+- Worktree configuration issues
+
+**Solutions**:
+```bash
+# 1. Verify git worktree status
+git worktree list
+
+# 2. Check current git directory
+git rev-parse --git-dir
+
+# 3. Repair worktree if needed
+git worktree repair
+
+# 4. Ensure you're in worktree directory
+cd $(git rev-parse --show-toplevel)
+```
+
+### Issue 3: Cross-Worktree File References Fail
+**Symptoms**: Can't reference files from other worktrees
+
+**Root Cause**: Using bash commands instead of filesystem MCP
+
+**Solutions for AI Assistants**:
+```python
+# 1. Use absolute paths with filesystem MCP
+mcp__filesystem__read_file(path="/path/to/project-root/main/config.json")
+
+# 2. List files in other worktrees
+mcp__filesystem__list_directory(path="/path/to/project-root/feature/feature-01")
+
+# 3. Copy files between worktrees
+source_content = mcp__filesystem__read_file(path="/path/to/project-root/main/shared/config.json")
+mcp__filesystem__write_file(
+    path="/path/to/project-root/feature/feature-01/config.json",
+    content=source_content
+)
+```
+
+**Note for Humans**: Symbolic links can be created manually if needed for persistent shared resources.
+
+## Validation Checklist
+
+### Manual Validation Steps (Reference Documentation)
+
+After setting up each worktree, validate using these checks:
+
+#### For Humans - Git Commands to Run:
+```bash
+# 1. List all worktrees
+git worktree list --verbose
+
+# 2. Check current branch
+git branch --show-current
+
+# 3. Verify git directory
+git rev-parse --git-dir
+
+# 4. Check worktree status
+git status
+```
+
+#### For AI Assistants - Filesystem MCP Validation:
+```python
+# 1. Check if .git file exists (indicates worktree)
+mcp__filesystem__get_file_info(path="/path/to/worktree/.git")
+
+# 2. Read .git file to verify it points to correct location
+mcp__filesystem__read_file(path="/path/to/worktree/.git")
+
+# 3. Verify project files exist
+mcp__filesystem__list_directory(path="/path/to/worktree")
+
+# 4. Check for typical project markers
+mcp__filesystem__get_file_info(path="/path/to/worktree/README.md")
+mcp__filesystem__get_file_info(path="/path/to/worktree/package.json")
+mcp__filesystem__get_file_info(path="/path/to/worktree/src")
+```
+
+#### Validation Checklist:
+- [ ] Worktree appears in `git worktree list`
+- [ ] `.git` file exists and points to correct bare repo
+- [ ] Can read and write files in worktree
+- [ ] Git commands work correctly from worktree
+- [ ] Project files are present
+
+## Essential Commands Reference
+
+### Worktree Management
+```bash
+# List all worktrees with details
+git worktree list --verbose
+
+# Add new worktree with new branch
+git worktree add <path> -b <new-branch>
+
+# Add worktree tracking remote branch
+git worktree add --track -b <branch> <path> <remote>/<branch>
+
+# Remove worktree (clean removal)
+git worktree remove <path>
+
+# Remove worktree (force)
+git worktree remove --force <path>
+
+# Clean up stale worktree entries
+git worktree prune
+
+# Lock worktree (prevent accidental removal)
+git worktree lock <path> --reason "Active development"
+
+# Unlock worktree
+git worktree unlock <path>
+
+# Move worktree to new location
+git worktree move <source> <destination>
+
+# Repair worktree administrative files
+git worktree repair
+```
+
+### Navigation Helpers
+
+#### For AI Assistants (Using Filesystem MCP):
+```python
+# List main worktree contents
+mcp__filesystem__list_directory(path="/path/to/project-root/main")
+
+# List feature directory
+mcp__filesystem__list_directory(path="/path/to/project-root/feature")
+
+# Get worktree information
+mcp__filesystem__get_file_info(path="/path/to/project-root/main/.git")
+```
+
+#### For Humans (Shell Aliases - One-time setup only):
+```bash
+# Go to main worktree
+alias cdmain='cd /path/to/project-root/main'
+
+# Go to feature directory
+alias cdfeature='cd /path/to/project-root/feature'
+
+# List and select worktree interactively (requires fzf)
+function cdworktree() {
+    local selected=$(git worktree list | fzf | awk '{print $1}')
+    [ -n "$selected" ] && cd "$selected"
+}
+```
+
+## Advanced Configuration
+
+### Worktree-Specific Git Hooks
+```bash
+# Enable worktree config
+git config extensions.worktreeConfig true
+
+# Set worktree-specific hooks
+cd /path/to/worktree
+git config --worktree core.hooksPath .githooks
+
+# Create worktree-specific hooks directory
+mkdir .githooks
+# Add your hooks here
+```
+
+### Shared Configuration Across Worktrees
+
+**Documentation: Standard Worktree Configuration**
+
+For each new worktree, apply these configurations:
+
+1. **Git Configuration** (run these git commands):
+```bash
+git config --worktree pull.rebase true
+git config --worktree push.default current
+```
+
+2. **Directory Structure** (AI should use filesystem MCP):
+```python
+# AI: Create standard directories using filesystem MCP
+mcp__filesystem__create_directory(path="/path/to/worktree/.vscode")
+mcp__filesystem__create_directory(path="/path/to/worktree/tmp")
+mcp__filesystem__create_directory(path="/path/to/worktree/logs")
+```
+
+3. **Shared Settings** (store in `.ai-context/shared-settings.json`):
+```json
+{
+  "vscode_settings": { /* your settings */ },
+  "git_config": {
+    "pull.rebase": true,
+    "push.default": "current"
+  }
+}
+```
+
+## Troubleshooting Decision Tree
+
+```
+Claude Code can't find files?
+├── Is AI using filesystem MCP for ALL file operations?
+│   ├── No → 🚨 STOP! Switch to filesystem MCP immediately
+│   └── Yes → Continue
+├── Are you using absolute paths with filesystem MCP?
+│   ├── No → Use absolute paths: mcp__filesystem__read_file(path="/full/path")
+│   └── Yes → Continue
+├── Is Claude Code session started from correct worktree?
+│   ├── No → Human: Restart Claude Code from worktree directory
+│   └── Yes → Continue
+├── Can filesystem MCP access the worktree path?
+│   ├── No → Check permissions with mcp__filesystem__get_file_info
+│   └── Yes → Continue
+├── Is git worktree intact?
+│   ├── No → Run: git worktree repair (git command OK for worktree management)
+│   └── Yes → Check .git file content with mcp__filesystem__read_file
+└── Still having issues?
+    └── Verify filesystem MCP is working correctly
+```
+
+## Best Practices Summary
+
+1. **🚨 ALWAYS use filesystem MCP server for ALL file operations - NEVER bash commands**
+2. **Always work from worktree directories, never from bare repo**
+3. **Use absolute paths for cross-worktree references**
+4. **Keep separate terminal sessions for each worktree**
+5. **Document context in each worktree**
+6. **Maintain AI context documentation (`.ai-context/worktree-map.md`)**
+7. **Update `.claude-config.json` when worktree structure changes**
+8. **Validate setup after creating new worktrees**
+9. **Use helper scripts for navigation and setup**
+10. **Configure worktree-specific settings when needed**
+11. **Clean up unused worktrees regularly with `git worktree prune`**
+12. **Lock important worktrees to prevent accidental deletion**
+13. **Use consistent naming conventions for feature worktrees**
+14. **Train AI assistants to exclusively use filesystem MCP for file access**
+
+## Quick Start Guide
+
+### Initial Worktree Setup Commands (Reference Documentation)
+
+**⚠️ NOTE**: These are reference commands for humans to run manually. AI assistants should use filesystem MCP for all file operations after initial setup.
+
+#### Step 1: Create Bare Repository (Human Action)
+```bash
+# Create project directory and initialize bare repo
+mkdir my-project
+cd my-project
+git init --bare
+git config extensions.worktreeConfig true
+```
+
+#### Step 2: Create Main Worktree (Human Action)
+```bash
+# Add main worktree
+git worktree add main -b main
+```
+
+#### Step 3: Initial Commit (Human Action)
+```bash
+# Navigate to main worktree and create initial commit
+cd main
+echo "# My Project" > README.md
+git add README.md
+git commit -m "Initial commit"
+cd ..
+```
+
+#### Step 4: Create Feature Directory (AI Can Do This)
+
+**For Humans**:
+```bash
+mkdir feature
+```
+
+**For AI Assistants**:
+```python
+# Use filesystem MCP to create feature directory
+mcp__filesystem__create_directory(path="/path/to/project/feature")
+```
+
+#### Step 5: Create Documentation Files (AI Should Do This)
+
+**AI Assistants should create these documentation files using filesystem MCP**:
+
+```python
+# Create .claude-config.json
+config_content = '''{
+  "project_name": "my-project",
+  "bare_repo": "/path/to/project",
+  "worktrees": {
+    "main": {
+      "path": "/path/to/project/main",
+      "branch": "main",
+      "status": "active"
+    }
+  }
+}'''
+mcp__filesystem__write_file(
+    path="/path/to/project/main/.claude-config.json",
+    content=config_content
+)
+
+# Create .ai-context/worktree-map.md
+mcp__filesystem__create_directory(path="/path/to/project/.ai-context")
+map_content = '''# Worktree Path Mapping
+## Project: my-project
+| Branch | Path | Status |
+|--------|------|--------|
+| main | /path/to/project/main | active |
+'''
+mcp__filesystem__write_file(
+    path="/path/to/project/.ai-context/worktree-map.md",
+    content=map_content
+)
+```
+
+---
+
+## Version History
+- v4.0: **DOCUMENTATION-ONLY** - Removed all .sh scripts, now pure documentation with filesystem MCP operations
+- v3.0: **CRITICAL UPDATE** - Mandated filesystem MCP server for ALL file operations, prohibited bash commands
+- v2.1: Added AI Context documentation and enhanced `.claude-config.json` for better path resolution
+- v2.0: Added comprehensive Claude Code integration guide and troubleshooting
+- v1.0: Initial git worktree setup documentation
