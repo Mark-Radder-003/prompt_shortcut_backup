@@ -28,7 +28,8 @@ With symbolic links, you:
 cd ~/workspace/your-project
 
 # Create symbolic link to main templates
-ln -s ~/Documents/_prompt/main _prompt_alias
+# ln -s ~/Documents/001_git_projects/_prompt/main _prompt_alias
+ln -s ~{YOUR_(_prompt/main)_PATH} _prompt_alias
 
 # Now you can reference templates using @_prompt/template_name.md
 ```

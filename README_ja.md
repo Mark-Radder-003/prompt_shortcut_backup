@@ -29,7 +29,8 @@
 cd ~/workspace/your-project
 
 # メインテンプレートへのシンボリックリンクを作成
-ln -s ~/Documents/_prompt/main _prompt_alias
+# ln -s ~/Documents/001_git_projects/_prompt/main _prompt_alias
+ln -s ~{YOUR_(_prompt/main)_PATH} _prompt_alias
 
 # @_prompt/template_name.md を使用してテンプレートを参照できます
 ```
