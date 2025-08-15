@@ -15,6 +15,19 @@
 ## Context & Purpose
 This guide provides a comprehensive setup for git worktree structure optimized for parallel development with Claude Code and other AI coding assistants. It addresses common path resolution issues and ensures seamless integration.
 
+### **SuperClaude Framework Integration**
+This guide is integrated into the SuperClaude framework as a **global reference** accessible via:
+- **Quick Reference**: `@GIT_WORKTREE.md` - Essential patterns and commands
+- **Complete Guide**: `@main/git_worktree_setup_guide.md` - Full documentation
+- **Memory Integration**: Knowledge stored in Claude Code memory for automatic recall
+- **Auto-Activation**: Triggered by keywords: "worktree", "git worktree", "multiple branches"
+
+### **Framework Components**
+- **Personas**: DevOps persona for worktree management, Security persona for path validation
+- **MCP Coordination**: Filesystem MCP (mandatory), Sequential MCP for complex git operations
+- **Wave Integration**: Multi-worktree analysis for complex projects
+- **Command Integration**: Works with `/build`, `/analyze`, `/troubleshoot` commands
+
 ### What This Document Provides
 - ✅ **Reference documentation** for git worktree setup commands
 - ✅ **Filesystem MCP operations** for AI assistants to use
@@ -182,6 +195,63 @@ mcp__filesystem__create_directory(path="/Users/username/project/feature/feature-
 # Instead of: ls -la
 # Use:
 mcp__filesystem__list_directory_with_sizes(path=".")
+```
+
+## SuperClaude Command Integration
+
+### **Using with SuperClaude Commands**
+
+**Git Worktree Analysis**:
+```bash
+# Analyze worktree structure and health
+/analyze --focus architecture @main/git_worktree_setup_guide.md
+
+# Deep analysis with validation
+/analyze --think-hard --validate "git worktree structure"
+```
+
+**Building with Worktrees**:
+```bash
+# Build across multiple worktrees
+/build --scope project --delegate folders
+
+# Validate worktree setup during build
+/build --validate --persona-devops
+```
+
+**Troubleshooting Worktree Issues**:
+```bash
+# Investigate worktree problems
+/troubleshoot "git worktree path errors" --think --seq
+
+# Security analysis of worktree permissions
+/troubleshoot --persona-security --focus security
+```
+
+### **Auto-Activation Examples**
+When you mention these patterns, this guide automatically activates:
+
+| User Input | Auto-Activation | Framework Response |
+|------------|-----------------|-------------------|
+| "git worktree setup" | ✅ | References @GIT_WORKTREE.md + DevOps persona |
+| "multiple git branches" | ✅ | Filesystem MCP enforcement + path validation |
+| "parallel development" | ✅ | Wave mode for multi-worktree analysis |
+| "path resolution errors" | ✅ | Security persona + troubleshooting patterns |
+
+### **Memory Integration Usage**
+The SuperClaude framework automatically recalls:
+- Filesystem MCP operation patterns
+- Common worktree troubleshooting solutions
+- Cross-worktree file operation templates
+- Validation checklists and best practices
+
+Access stored knowledge:
+```bash
+# Query memory for worktree patterns
+/search "git worktree filesystem MCP operations"
+
+# Recall troubleshooting procedures
+/recall "worktree path resolution errors"
 ```
 
 ## Claude Code Integration Best Practices
@@ -796,7 +866,137 @@ mcp__filesystem__write_file(
 
 ---
 
+## Recommendations for Enhancement
+
+### 🎯 **High Impact Improvements**
+
+#### 1. Quick Command Reference
+
+| Task | Human Command | AI (Filesystem MCP) |
+|------|---------------|---------------------|
+| Create worktree | `git worktree add path branch` | N/A (git only) |
+| List files | N/A | `mcp__filesystem__list_directory(path="...")` |
+| Navigate | `cd path` | `mcp__filesystem__list_directory(path="...")` |
+| Check status | `git worktree list` | Use git command + MCP for files |
+| Create directory | `mkdir path` | `mcp__filesystem__create_directory(path="...")` |
+| Move files | `mv source dest` | `mcp__filesystem__move_file(source="...", destination="...")` |
+| Read files | `cat file` | `mcp__filesystem__read_file(path="...")` |
+| Write files | `echo "content" > file` | `mcp__filesystem__write_file(path="...", content="...")` |
+
+#### 2. Visual Workflow Overview
+
+```
+bare-repo/
+├── .git/           # ← Git management
+├── main/           # ← Worktree 1 (humans: cd here, AI: use full path)
+└── feature/        # ← Worktree group
+    ├── feature-01/ # ← Worktree 2 (AI: absolute paths only)
+    └── feature-02/ # ← Worktree 3
+```
+
+#### 3. Real-World Integration Examples
+
+**Scenario: Starting work on main branch**
+```python
+# AI Assistant workflow:
+1. mcp__filesystem__list_directory(path="/Users/dev/project/main")
+2. mcp__filesystem__read_file(path="/Users/dev/project/main/.claude-config.json")
+3. Begin work with full context
+```
+
+**Scenario: Cross-worktree file sharing**
+```python
+# Copy config from main to feature branch
+content = mcp__filesystem__read_file(path="/Users/dev/project/main/config.json")
+mcp__filesystem__write_file(
+    path="/Users/dev/project/feature/feature-01/config.json", 
+    content=content
+)
+```
+
+### 📊 **Medium Impact Enhancements**
+
+#### 4. Troubleshooting Matrix
+
+| Issue | Symptoms | Root Cause | Solution |
+|-------|----------|------------|----------|
+| Path errors | "File not found" | Using bash commands | Switch to filesystem MCP |
+| Git confusion | Wrong branch status | Working from bare repo | Start from worktree |
+| Access denied | Permission errors | Incorrect path resolution | Use absolute paths |
+| Context loss | AI loses track of files | Relative path confusion | Always use absolute paths |
+| Performance slow | Repeated file operations | No caching strategy | Batch MCP operations |
+
+#### 5. Performance Optimization Guide
+
+**Filesystem MCP Performance Tips:**
+- **Batch operations** when possible - Use `read_multiple_files` for multiple reads
+- **Cache directory listings** for repeated access within session
+- **Use absolute paths** to avoid resolution overhead
+- **Validate paths** before complex operations using `get_file_info`
+- **Optimize file operations** - Read once, process multiple times
+
+### 🔧 **Structure Improvements**
+
+#### 6. Documentation Hierarchy
+
+```markdown
+# Git Worktree + Claude Code Guide
+
+## Quick Start (5 minutes)
+- Essential commands and setup
+## Core Concepts (Understanding)
+- What worktrees are and why they matter
+## Setup Process (Step-by-step)
+- Complete implementation guide
+## Claude Code Integration (AI-specific)
+- Filesystem MCP requirements and examples
+## Troubleshooting (Problem resolution)
+- Common issues and solutions
+## Reference (Commands & patterns)
+- Quick lookup tables and examples
+```
+
+#### 7. Persona-Specific Sections
+
+- **For Developers**: Human setup commands, git workflows, terminal shortcuts
+- **For AI Assistants**: Filesystem MCP operations, absolute path requirements, validation patterns
+- **For Teams**: Shared worktree standards, naming conventions, collaboration patterns
+
+## **SuperClaude Framework Cross-References**
+
+**Related Components**:
+- **@RULES.md**: Git worktree detection rules and filesystem MCP enforcement
+- **@MCP.md**: Filesystem MCP server integration patterns and fallback strategies  
+- **@PERSONAS.md**: DevOps and Security persona activation for worktree operations
+- **@ORCHESTRATOR.md**: Auto-routing and validation for git worktree operations
+- **@COMMANDS.md**: Integration with /build, /analyze, /troubleshoot commands
+
+**Integration Patterns**:
+- **Wave Mode**: Multi-worktree analysis for enterprise-scale projects
+- **Task Delegation**: Parallel analysis across worktree directories
+- **Quality Gates**: Validation cycles for worktree setup and operations
+- **Memory Persistence**: Long-term knowledge retention across sessions
+
+**Access Methods**:
+```bash
+# Framework entry point
+@CLAUDE.md
+
+# Quick reference
+@GIT_WORKTREE.md  
+
+# Complete documentation
+@main/git_worktree_setup_guide.md
+
+# Related framework components
+@MCP.md @PERSONAS.md @ORCHESTRATOR.md
+```
+
+---
+
 ## Version History
+- v6.0: **SUPERCLAUD FRAMEWORK INTEGRATION** - Integrated into SuperClaude framework as global reference, added command integration, auto-activation triggers, memory entities, cross-references
+- v5.0: **ENHANCED REFERENCE** - Added quick reference tables, visual diagrams, real-world examples, troubleshooting matrix
 - v4.0: **DOCUMENTATION-ONLY** - Removed all .sh scripts, now pure documentation with filesystem MCP operations
 - v3.0: **CRITICAL UPDATE** - Mandated filesystem MCP server for ALL file operations, prohibited bash commands
 - v2.1: Added AI Context documentation and enhanced `.claude-config.json` for better path resolution
