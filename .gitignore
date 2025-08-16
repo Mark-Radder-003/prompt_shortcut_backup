@@ -1,5 +1,4 @@
-archive/
-CLAUDE.md
+_archive/
 
 # GCP Credentials and Service Account Keys
 *.json
